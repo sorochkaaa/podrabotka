@@ -1,0 +1,16 @@
+.JobsList {
+    width: 60%;
+}
+
+
+.welcome,
+.ListWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.workerImg {
+    height: 400px;
+}

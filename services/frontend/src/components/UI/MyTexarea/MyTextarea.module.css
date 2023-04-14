@@ -1,0 +1,11 @@
+.MyTextarea {
+    display: block;
+    font: inherit;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 5px;
+    padding: .5rem 1rem;
+    resize: none;
+    border: 2px solid grey;
+    background-color: white;
+}

@@ -1,0 +1,312 @@
+openapi: 3.0.0
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: http://127.0.0.1:8080
+info:
+  description: This is a podrapotka API
+  version: "1.0.0"
+  title: Swagger Podrabotka
+tags:
+  - name: main
+    description: Main routings
+  - name: jobs
+    description: Jobs routings
+  - name: reports
+    description: Jobs routings
+paths:
+  /register:
+    post:
+      tags:
+        - main
+      summary: register user
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: 'Registration is completed'
+        '400':
+          description: 'Invalid register credentials'
+        '409':
+          description: 'User already exist'
+  /login:
+    post:
+      tags:
+        - main
+      summary: login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: 'Invalid password or username'
+  /user:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - main
+      summary: Get User
+      operationId: getUser
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /jobs:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - jobs
+      summary: Get All Jobs
+      operationId: getAllJobs
+      responses:
+        '200':
+          description: All Jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Job'
+        '401':
+          description: 'Token is not valid or has expired'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - jobs
+      summary: Add New Job
+      operationId: addNewJob
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+      responses:
+        '200':
+          description: Job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: 'Invalid data'
+  /jobs{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - jobs
+      summary: Get Jobs by ID
+      operationId: getJobByID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job' 
+  /jobs{id}/join:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - jobs
+      summary: Join Employee to Job
+      operationId: joinUserToJob
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: 'Invalid param'        
+  /jobs{id}/select/{username}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - jobs
+      summary: Select Employee in Job
+      operationId: selectUserInJob
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: 'Invalid param'
+  /report:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - reports
+      summary: Get Report
+      operationId: getReport
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: 'Invalid param'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - reports
+      summary: Add Report
+      operationId: addReport
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: 'Invalid param'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      required: 
+        - username
+        - password
+        - description
+        - role
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        description:
+          type: string
+        role:
+          type: string
+    LoginRequest:
+      type: object
+      required: 
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    TokenResponse:
+      type: object
+      required: 
+        - token
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    User:
+      type: object
+      required: 
+        - id
+        - username
+        - password
+        - description
+        - role
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        description:
+          type: string
+        role:
+          type: string
+    Job:
+      type: object
+      required: 
+        - id
+        - name
+        - title
+        - description
+        - employee
+        - users
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        employee:
+          type: string
+        users:
+          type: array
+          items:
+            type: string
+    JobRequest:
+      type: object
+      required: 
+        - name
+        - title
+        - description
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+    Query:
+      type: object
+      required: 
+        - query
+      properties:
+        query:
+          type: string
